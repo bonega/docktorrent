@@ -90,9 +90,7 @@ peer_exchange = yes
 system.file_allocate.set = yes
 
 # For ruTorrent
-execute_nothrow = rm,/tmp/rpc.socket
-scgi_local = /tmp/rpc.socket
-schedule = chmod,0,0,"execute=chmod,777,/tmp/rpc.socket"
+scgi_port = 0.0.0.0:5000
 
 # Encoding
 encoding_list = UTF-8
