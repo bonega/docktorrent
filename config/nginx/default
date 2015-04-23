@@ -16,7 +16,8 @@ server {
 	location ~ \.php$ {
 		fastcgi_split_path_info ^(.+\.php)(/.+)$;
 		# NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
-
+		auth_basic "Login Required";
+		auth_basic_user_file /usr/share/nginx/html/rutorrent/.htpasswd;
 		fastcgi_pass unix:/var/run/php5-fpm.sock;
 		fastcgi_index index.php;
 		include fastcgi.conf;
