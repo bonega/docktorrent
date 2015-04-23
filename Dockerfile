@@ -1,19 +1,16 @@
 FROM debian:jessie
 
-MAINTAINER kfei <kfei@kfei.net>
-
-ENV VER_LIBTORRENT 0.13.4
-ENV VER_RTORRENT 0.9.4
-ENV VER_RUTORRENT 3.6
+MAINTAINER bonega <bonega@gmail.com>
 
 WORKDIR /usr/local/src
 
 # This long disgusting instruction saves your image ~130 MB
 RUN build_deps="automake build-essential libc-ares-dev libcppunit-dev libtool"; \
-    build_deps="${build_deps} libssl-dev libxml2-dev libncurses5-dev pkg-config subversion wget"; \
+    build_deps="${build_deps} libssl-dev libxml2-dev libncurses5-dev pkg-config subversion wget git ca-certificates"; \
     set -x && \
-    apt-get update && apt-get install -q -y --no-install-recommends ${build_deps} && \
-    wget http://curl.haxx.se/download/curl-7.39.0.tar.gz && \
+    apt-get update && apt-get install -q -y --no-install-recommends ${build_deps}
+
+RUN wget http://curl.haxx.se/download/curl-7.39.0.tar.gz && \
     tar xzvfp curl-7.39.0.tar.gz && \
     cd curl-7.39.0 && \
     ./configure --enable-ares --enable-tls-srp --enable-gnu-tls --with-zlib --with-ssl && \
@@ -29,36 +26,32 @@ RUN build_deps="automake build-essential libc-ares-dev libcppunit-dev libtool"; 
     make install && \
     cd .. && \
     rm -rf xmlrpc-c && \
-    ldconfig && \
-    wget http://libtorrent.rakshasa.no/downloads/libtorrent-$VER_LIBTORRENT.tar.gz && \
-    tar xzf libtorrent-$VER_LIBTORRENT.tar.gz && \
-    cd libtorrent-$VER_LIBTORRENT && \
+    ldconfig
+
+RUN wget http://libtorrent.rakshasa.no/downloads/libtorrent-0.13.4.tar.gz && \
+    mkdir libtorrent && \
+    tar -zxf libtorrent-* -C libtorrent --strip-components=1 && \
+    cd libtorrent && \
     ./autogen.sh && \
     ./configure --with-posix-fallocate && \
     make && \
     make install && \
     cd .. && \
-    rm -rf libtorrent-* && \
-    ldconfig && \
-    wget http://libtorrent.rakshasa.no/downloads/rtorrent-$VER_RTORRENT.tar.gz && \
-    tar xzf rtorrent-$VER_RTORRENT.tar.gz && \
-    cd rtorrent-$VER_RTORRENT && \
+    rm -rf libtorrent* && \
+    ldconfig
+
+RUN wget http://libtorrent.rakshasa.no/downloads/rtorrent-0.9.4.tar.gz && \
+    mkdir rtorrent && \
+    tar -zxf rtorrent-*.tar.gz -C rtorrent --strip-components=1 && \
+    cd rtorrent && \
     ./autogen.sh && \
     ./configure --with-xmlrpc-c --with-ncurses && \
     make && \
     make install && \
     cd .. && \
-    rm -rf rtorrent-* && \
+    rm -rf rtorrent* && \
     ldconfig && \
-    mkdir -p /usr/share/nginx/html && \
-    cd /usr/share/nginx/html && \
-    curl -L -O http://dl.bintray.com/novik65/generic/rutorrent-$VER_RUTORRENT.tar.gz && \
-    curl -L -O http://dl.bintray.com/novik65/generic/plugins-$VER_RUTORRENT.tar.gz && \
-    tar xzvpf rutorrent-$VER_RUTORRENT.tar.gz && \
-    tar xzvpf plugins-$VER_RUTORRENT.tar.gz -C rutorrent/ && \
-    rm -rf *.tar.gz && \
-    apt-get purge -y --auto-remove ${build_deps} && \
-    apt-get autoremove -y
+    mkdir -p /usr/share/nginx/html
 
 # Install required packages
 RUN apt-get update && apt-get install -q -y --no-install-recommends \
@@ -81,6 +74,13 @@ RUN echo "deb http://www.deb-multimedia.org jessie main" >> /etc/apt/sources.lis
     deb-multimedia-keyring \
     ffmpeg
 
+
+RUN cd /usr/share/nginx/html && \
+    git clone --quiet https://github.com/bonega/ruTorrent.git rutorrent && \
+    cd rutorrent && git reset --hard 3.7 && \
+    apt-get purge -y --auto-remove ${build_deps} && \
+    apt-get autoremove -y
+
 # IMPORTANT: Change the default login/password of ruTorrent before build
 RUN htpasswd -cb /usr/share/nginx/html/rutorrent/.htpasswd docktorrent p@ssw0rd
 
@@ -99,7 +99,7 @@ COPY rootfs /
 ENTRYPOINT ["/usr/local/bin/docktorrent"]
 
 # Declare ports to expose
-EXPOSE 80 9527 45566 5000
+EXPOSE 80 9527 45566
 
 # Declare volumes
 VOLUME ["/rtorrent", "/var/log"]
