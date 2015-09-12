@@ -81,9 +81,6 @@ RUN cd /usr/share/nginx/html && \
     apt-get purge -y --auto-remove ${build_deps} && \
     apt-get autoremove -y
 
-# IMPORTANT: Change the default login/password of ruTorrent before build
-RUN htpasswd -cb /usr/share/nginx/html/rutorrent/.htpasswd docktorrent p@ssw0rd
-
 # Copy config files
 COPY config/nginx/default /etc/nginx/sites-available/default
 COPY config/rtorrent/.rtorrent.rc /root/.rtorrent.rc
