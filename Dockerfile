@@ -28,7 +28,7 @@ RUN wget http://curl.haxx.se/download/curl-7.39.0.tar.gz && \
     rm -rf xmlrpc-c && \
     ldconfig
 
-RUN wget http://libtorrent.rakshasa.no/downloads/libtorrent-0.13.4.tar.gz && \
+RUN wget http://rtorrent.net/downloads/libtorrent-0.13.6.tar.gz && \
     mkdir libtorrent && \
     tar -zxf libtorrent-* -C libtorrent --strip-components=1 && \
     cd libtorrent && \
@@ -40,7 +40,7 @@ RUN wget http://libtorrent.rakshasa.no/downloads/libtorrent-0.13.4.tar.gz && \
     rm -rf libtorrent* && \
     ldconfig
 
-RUN wget http://libtorrent.rakshasa.no/downloads/rtorrent-0.9.4.tar.gz && \
+RUN wget http://rtorrent.net/downloads/rtorrent-0.9.6.tar.gz && \
     mkdir rtorrent && \
     tar -zxf rtorrent-*.tar.gz -C rtorrent --strip-components=1 && \
     cd rtorrent && \
