@@ -85,6 +85,7 @@ RUN cd /usr/share/nginx/html && \
 COPY config/nginx/default /etc/nginx/sites-available/default
 COPY config/rtorrent/.rtorrent.rc /root/.rtorrent.rc
 COPY config/rutorrent/config.php /usr/share/nginx/html/rutorrent/conf/config.php
+COPY config/rutorrent/plugins.ini /usr/share/nginx/html/rutorrent/conf/plugins.ini
 
 # Add the s6 binaries fs layer
 ADD s6-1.1.3.2-musl-static.tar.xz /
